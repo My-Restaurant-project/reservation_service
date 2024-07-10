@@ -1,11 +1,11 @@
-CREATE TABLE IF NOT EXISTS "Restaurants"(
-    "id" UUID NOT NULL,
-    "name" VARCHAR(255) NOT NULL,
-    "address" VARCHAR(255) NOT NULL,
-    "phone_number" VARCHAR(255) NOT NULL,
-    "description" VARCHAR(255) NOT NULL,
+CREATE TABLE IF NOT EXISTS Restaurants(
+    id UUID NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT NULL,
-    PRIMARY KEY ("id")
+    PRIMARY KEY (id)
 );

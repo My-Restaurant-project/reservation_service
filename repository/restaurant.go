@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 	reser "reservation_service/genproto/reservation_service"
 
 	"github.com/google/uuid"
@@ -19,7 +20,7 @@ func NewRestaurantRepo(db *sqlx.DB) *RestaurantRepository {
 func (r *RestaurantRepository) CreateRestaurant(ctx context.Context, resReq *reser.AddRestaurantRequest) (*reser.AddRestaurantResponse, error) {
 	var addRes *reser.AddRestaurantResponse
 	newId := uuid.NewString()
-
+	log.Println(resReq)
 	query := `
 		INSERT INTO restaurants (id, name, description, address, phone_number)
         VALUES ($1, $2, $3, $4, $5)

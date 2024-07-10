@@ -6,7 +6,6 @@ import (
 	c "reservation_service/configs"
 	pb "reservation_service/genproto/reservation_service"
 	"reservation_service/pkg"
-	"reservation_service/repository"
 	"reservation_service/services"
 
 	"google.golang.org/grpc"
@@ -34,8 +33,7 @@ func main() {
 	log.Println("Server started on port " + config.URL_PORT)
 
 	// Initialize repository and services
-	reserve := repository.NewReservationRepo(db)
-	rs := services.NewReservationService(reserve)
+	rs := services.NewReservationService(db)
 
 	// Create a new gRPC server
 	s := grpc.NewServer()
