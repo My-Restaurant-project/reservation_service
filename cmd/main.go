@@ -1,14 +1,15 @@
 package main
 
 import (
-	c "Github.com/Project-2/Reservation-Service/configs"
-	pb "Github.com/Project-2/Reservation-Service/genproto/reservation_service"
-	"Github.com/Project-2/Reservation-Service/pkg"
-	"Github.com/Project-2/Reservation-Service/repository"
-	"Github.com/Project-2/Reservation-Service/services"
-	"google.golang.org/grpc"
 	"log"
 	"net"
+	c "reservation_service/configs"
+	pb "reservation_service/genproto/reservation_service"
+	"reservation_service/pkg"
+	"reservation_service/repository"
+	"reservation_service/services"
+
+	"google.golang.org/grpc"
 )
 
 func main() {
