@@ -17,4 +17,4 @@ migrate_force:
 	migrate -path migrations -database ${DB_URL}  -verbose force 1
 
 migrate_file:
-	migrate create -ext sql -dir migrations -seq Menu
+	migrate create -ext sql -dir migrations -seq ReservationOrders
