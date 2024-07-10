@@ -1,9 +1,9 @@
 package services
 
 import (
-	pb "Github.com/Project-2/Reservation-Service/genproto/reservation_service"
-	"Github.com/Project-2/Reservation-Service/repository"
 	"context"
+	pb "reservation_service/genproto/reservation_service"
+	"reservation_service/repository"
 )
 
 type ReservationService struct {

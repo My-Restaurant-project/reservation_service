@@ -2,11 +2,11 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/google/uuid"
-	"github.com/spf13/cast"
 	"time"
 
-	pb "Github.com/Project-2/Reservation-Service/genproto/reservation_service"
+	"github.com/google/uuid"
+
+	pb "reservation_service/genproto/reservation_service"
 )
 
 type ReservationRepo struct {
@@ -33,7 +33,7 @@ func (r *ReservationRepo) CreateRestaurant(req *pb.AddRestaurantRequest) (*pb.Ad
 		Address:     req.Address,
 		PhoneNumber: req.PhoneNumber,
 		Description: req.Description,
-		CreatedAt:   cast.ToString(time.Now()),
+		CreatedAt:   time.Now().GoString(),
 	}, nil
 }
 
@@ -49,6 +49,8 @@ func (r *ReservationRepo) GetRestaurantById(req *pb.GetRestaurantRequest) (*pb.G
 	return &res, nil
 }
 
+// error needs to be handled for MuhaamadAziz, the instances wont work properly because this methods are not implemented with database interaction.
+// Aso when scanning the row, the scan method will return an error due to nill deference of the scnanned type.
 func (r *ReservationRepo) GetAllRestaurants(req *pb.GetRestaurantsRequest) (*pb.GetRestaurantsResponse, error) {
 	query := `select id, name, address, phone_number, description from restaurantsw where deleted_at IS NULL`
 	rows, err := r.DB.Query(query)
@@ -56,7 +58,6 @@ func (r *ReservationRepo) GetAllRestaurants(req *pb.GetRestaurantsRequest) (*pb.
 		return nil, err
 	}
 	defer rows.Close()
-
 	var res pb.GetRestaurantsResponse
 	var restaurants []*pb.Restaurant
 	for rows.Next() {

@@ -1,6 +1,6 @@
-module Github.com/Project-2/Reservation-Service
+module reservation_service
 
-go 1.23rc1
+go 1.22.3
 
 require (
 	github.com/google/uuid v1.6.0
