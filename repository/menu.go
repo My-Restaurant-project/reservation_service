@@ -18,7 +18,7 @@ func NewMenuRepo(db *sqlx.DB) *MenuRepository {
 func (r *MenuRepository) CreateMenu(ctx context.Context, mReq *reser.AddMenuRequest) (*reser.AddMenuResponse, error) {
 	return nil, nil
 }
-
+g
 func (r *MenuRepository) GetMenuById(ctx context.Context, req *reser.GetMenuRequest) (*reser.GetMenuResponse, error) {
 	return nil, nil
 }
