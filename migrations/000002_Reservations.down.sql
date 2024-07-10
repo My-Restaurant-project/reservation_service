@@ -1,1 +1,2 @@
 DROP TABLE IF EXISTS Reservations;
+DROP TYPE IF EXISTS status;
