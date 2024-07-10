@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/joho/godotenv"
 	"github.com/spf13/cast"
-	"os"
 )
 
 type Config struct {
@@ -27,7 +28,7 @@ func Load() Config {
 	config.DB_PORT = cast.ToInt(Coalesce("DB_PORT", 5432))
 	config.DB_USER = cast.ToString(Coalesce("DB_USER", "postgres"))
 	config.DB_PASSWORD = cast.ToString(Coalesce("DB_PASSWORD", "postgres"))
-	config.URL_PORT = cast.ToString(Coalesce("URL_PORT", "50051"))
+	config.URL_PORT = cast.ToString(Coalesce("URL_PORT", "50053"))
 
 	return config
 }
