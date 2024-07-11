@@ -40,7 +40,7 @@ func (r *ReservationRespoitory) CreateReservation(ctx context.Context, reservRes
 	}
 
 	query := `
-		INSERT INTO restaurants (id, user_id, restaurant_id, reservation_time, status)
+		INSERT INTO reservations (id, user_id, restaurant_id, reservation_time, status)
         VALUES ($1, $2, $3, $4, $5)
     `
 
