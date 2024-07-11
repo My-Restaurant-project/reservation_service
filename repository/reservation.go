@@ -82,11 +82,11 @@ func (r *ReservationRespoitory) GetReservationById(ctx context.Context, req *res
 func (r *ReservationRespoitory) UpdateReservation(ctx context.Context, req *reser.UpdateReservationRequest) (*reser.UpdateReservationResponse, error) {
 	query := `
 		UPDATE reservations
-        SET restaurant_id = $1, reservation_time = $2, status = $3, updated_at = now()
-        WHERE id = $4
+        SET  reservation_time = $1, status = $2, updated_at = now()
+        WHERE id = $3
 		RETURNING id, user_id, restaurant_id, reservation_time, status, created_at, updated_at
     `
-	row := r.db.QueryRowContext(ctx, query, req.RestaurantId, req.ReservationTime, req.Status, req.Id)
+	row := r.db.QueryRowContext(ctx, query, req.ReservationTime, req.Status, req.Id)
 	var updResRes reser.UpdateReservationResponse
 	var res reser.Reservation
 
