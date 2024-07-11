@@ -39,7 +39,7 @@ func (r *MenuRepository) CreateMenu(ctx context.Context, mReq *reser.AddMenuRequ
 }
 
 func (r *MenuRepository) GetMenuById(ctx context.Context, req *reser.GetMenuRequest) (*reser.GetMenuResponse, error) {
-	query := `select restaurant_id, name, description, price where id=$1`
+	query := `select restaurant_id, name, description, price from menu where id=$1 and deleted_at is null`
 
 	row := r.db.QueryRowContext(ctx, query, req.Id)
 
@@ -57,7 +57,7 @@ func (r *MenuRepository) GetMenuById(ctx context.Context, req *reser.GetMenuRequ
 }
 
 func (r *MenuRepository) UpdateMenu(ctx context.Context, req *reser.UpdateMenuRequest) (*reser.UpdateMenuResponse, error) {
-	query := `update menu set name, description, price where id = $1`
+	query := `update menu set name, description, price from menu where id = $1`
 
 	_, err := r.db.ExecContext(ctx, query, req.Id)
 	if err != nil {
@@ -79,7 +79,7 @@ func (r *MenuRepository) UpdateMenu(ctx context.Context, req *reser.UpdateMenuRe
 }
 
 func (r *MenuRepository) DeleteMenu(ctx context.Context, req *reser.DeleteMenuRequest) (*reser.DeleteMenuResponse, error) {
-	query := `update menu set deleted_at where id=$1`
+	query := `update menu set deleted_at from menu where id=$1`
 
 	_, err := r.db.ExecContext(ctx, query, req.Id)
 	if err != nil {
