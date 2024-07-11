@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	reser "reservation_service/genproto/reservation_service"
 
 	"github.com/google/uuid"
@@ -19,12 +21,29 @@ func NewReservationRepo(db *sqlx.DB) *ReservationRespoitory {
 func (r *ReservationRespoitory) CreateReservation(ctx context.Context, reservRes *reser.AddReservationRequest) (*reser.AddReservationResponse, error) {
 	var addRes *reser.AddReservationResponse
 	newId := uuid.NewString()
+
+	qry := `
+		SELECT id
+        FROM restaurants
+        WHERE id = $1 AND deleted_at IS NULL
+
+	`
+	row := r.db.QueryRow(qry, reservRes.RestaurantId)
+	var resId string
+	err := row.Scan(&resId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return addRes, fmt.Errorf("restaurant not found")
+		}
+		return addRes, err
+	}
+
 	query := `
 		INSERT INTO restaurants (id, user_id, restaurant_id, reservation_time, status)
         VALUES ($1, $2, $3, $4, $5)
     `
 
-	_, err := r.db.ExecContext(ctx, query, newId, reservRes.UserId, reservRes.RestaurantId, reservRes.ReservationTime, reservRes.Status)
+	_, err = r.db.ExecContext(ctx, query, newId, reservRes.UserId, reservRes.RestaurantId, reservRes.ReservationTime, reservRes.Status)
 	if err != nil {
 		return addRes, err
 	}
