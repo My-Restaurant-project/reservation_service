@@ -83,7 +83,7 @@ func (r *ReservationRespoitory) UpdateReservation(ctx context.Context, req *rese
 	query := `
 		UPDATE reservations
         SET  reservation_time = $1, status = $2, updated_at = now()
-        WHERE id = $3
+        WHERE id = $3 AND deleted_at IS NULL
 		RETURNING id, user_id, restaurant_id, reservation_time, status, created_at, updated_at
     `
 	row := r.db.QueryRowContext(ctx, query, req.ReservationTime, req.Status, req.Id)
@@ -104,8 +104,8 @@ func (r *ReservationRespoitory) DeleteReservation(ctx context.Context, req *rese
 	query := `
 		UPDATE reservations
         SET deleted_at = now()
-        WHERE id = $1
-
+        WHERE id = $1 AND deleted_at IS NULL
+		
     `
 	_, err := r.db.ExecContext(ctx, query, ID)
 	if err != nil {

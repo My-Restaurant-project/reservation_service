@@ -64,7 +64,7 @@ func (r *RestaurantRepository) UpdateRestaurant(ctx context.Context, req *reser.
 	query := `
 		UPDATE restaurants
         SET name = $1, description = $2, address = $3, phone_number = $4, updated_at = now()
-        WHERE id = $5
+        WHERE id = $5 AND deleted_at IS NULL
 		RETURNING id, name, description, address, phone_number, created_at, updated_at
     `
 	row := r.db.QueryRowContext(ctx, query, req.Name, req.Description, req.Address, req.PhoneNumber, req.Id)
@@ -86,7 +86,7 @@ func (r *RestaurantRepository) DeleteRestaurant(ctx context.Context, req *reser.
 	query := `
 		UPDATE restaurants
         SET deleted_at = now()
-        WHERE id = $1
+        WHERE id = $1 AND deleted_at IS NULL
 		
     `
 	_, err := r.db.ExecContext(ctx, query, Id)
