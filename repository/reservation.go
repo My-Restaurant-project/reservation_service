@@ -14,7 +14,7 @@ type ReservationRespoitory struct {
 	db *sqlx.DB
 }
 
-func NewReservationRepo(db *sqlx.DB) *ReservationRespoitory {
+func NewReservationRepository(db *sqlx.DB) *ReservationRespoitory {
 	return &ReservationRespoitory{db: db}
 }
 

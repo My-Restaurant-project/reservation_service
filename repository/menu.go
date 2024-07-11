@@ -14,7 +14,7 @@ type MenuRepository struct {
 	db *sqlx.DB
 }
 
-func NewMenuRepo(db *sqlx.DB) *MenuRepository {
+func NewMenuRepository(db *sqlx.DB) *MenuRepository {
 	return &MenuRepository{db: db}
 }
 

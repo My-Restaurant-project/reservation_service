@@ -12,19 +12,25 @@ import (
 type MainService interface {
 	RestaurantService() RestaurantService
 	ReservationService() ReservationService
+	ReservationOrderService() ReservationOrderService
+	MenuService() MenuService
 }
 
 type mainServiceImpl struct {
 	reser.UnimplementedReservationServiceServer
 	user.UnimplementedAuthenticationServiceServer
-	restaurantService   RestaurantService
-	reservatiionService ReservationService
+	restaurantService       RestaurantService
+	reservatiionService     ReservationService
+	reservationOrderService ReservationOrderService
+	menuService             MenuService
 }
 
 func NewMainService(db *sqlx.DB) *mainServiceImpl {
 	return &mainServiceImpl{
-		restaurantService:   NewRestaurantService(repo.NewRestaurantRepo(db)),
-		reservatiionService: NewReservationService(repo.NewReservationRepo(db)),
+		restaurantService:       NewRestaurantService(repo.NewRestaurantRepository(db)),
+		reservatiionService:     NewReservationService(repo.NewReservationRepository(db)),
+		reservationOrderService: NewReservationOrderService(repo.NewReservationOrderRepository(db)),
+		menuService:             NewMenuService(repo.NewMenuRepository(db)),
 	}
 }
 
@@ -36,6 +42,15 @@ func (rs *mainServiceImpl) ReservationService() ReservationService {
 	return rs.reservatiionService
 }
 
+func (rs *mainServiceImpl) ReservationOrderService() ReservationOrderService {
+	return rs.reservationOrderService
+}
+
+func (rs *mainServiceImpl) MenuService() MenuService {
+	return rs.menuService
+}
+
+// Restaurant Service implementation
 func (rs *mainServiceImpl) AddRestaurant(ctx context.Context, resReq *reser.AddRestaurantRequest) (*reser.AddRestaurantResponse, error) {
 	resp, err := rs.RestaurantService().AddRestaurant(ctx, resReq)
 	if err != nil {
@@ -76,7 +91,7 @@ func (rs *mainServiceImpl) GetRestaurants(ctx context.Context, req *reser.GetRes
 	return resp, nil
 }
 
-// /////////////////////////////////////////
+// Reservation service implementation
 func (rs *mainServiceImpl) AddReservation(ctx context.Context, resReq *reser.AddReservationRequest) (*reser.AddReservationResponse, error) {
 	resp, err := rs.ReservationService().AddReservation(ctx, resReq)
 	if err != nil {
@@ -112,6 +127,91 @@ func (rs *mainServiceImpl) DeleteReservation(ctx context.Context, req *reser.Del
 // getall
 func (rs *mainServiceImpl) GetReservations(ctx context.Context, req *reser.GetReservationsRequest) (*reser.GetReservationsResponse, error) {
 	resp, err := rs.ReservationService().GetReservations(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// Rerervaton Order Service
+
+func (rs *mainServiceImpl) AddReservationOrder(ctx context.Context, resReq *reser.AddReservationOrderRequest) (*reser.AddReservationOrderResponse, error) {
+	resp, err := rs.ReservationOrderService().AddReservationOrder(ctx, resReq)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) GetReservationOrder(ctx context.Context, req *reser.GetReservationOrderRequest) (*reser.GetReservationOrderResponse, error) {
+	resp, err := rs.ReservationOrderService().GetReservationOrder(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) UpdateReservationOrder(ctx context.Context, req *reser.UpdateReservationOrderRequest) (*reser.UpdateReservationOrderResponse, error) {
+	resp, err := rs.ReservationOrderService().UpdateReservationOrder(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) DeleteReservationOrder(ctx context.Context, req *reser.DeleteReservationOrderRequest) (*reser.DeleteReservationOrderResponse, error) {
+	resp, err := rs.ReservationOrderService().DeleteReservationOrder(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+
+}
+
+func (rs *mainServiceImpl) GetReservationsOrders(ctx context.Context, req *reser.GetReservationOrdersRequest) (*reser.GetReservationOrdersResponse, error) {
+	resp, err := rs.ReservationOrderService().GetReservationsOrders(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// Menu service implementation
+
+func (rs *mainServiceImpl) Menu(ctx context.Context, req *reser.AddMenuRequest) (*reser.AddMenuResponse, error) {
+	resp, err := rs.MenuService().AddMenu(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) GetMenu(ctx context.Context, req *reser.GetMenuRequest) (*reser.GetMenuResponse, error) {
+	resp, err := rs.MenuService().GetMenu(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) UpdateMenu(ctx context.Context, req *reser.UpdateMenuRequest) (*reser.UpdateMenuResponse, error) {
+	resp, err := rs.MenuService().UpdateMenu(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) DeleteMenu(ctx context.Context, req *reser.DeleteMenuRequest) (*reser.DeleteMenuResponse, error) {
+	resp, err := rs.MenuService().DeleteMenu(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (rs *mainServiceImpl) GetMenus(ctx context.Context, req *reser.GetMenusRequest) (*reser.GetMenusResponse, error) {
+	resp, err := rs.MenuService().GetMenus(ctx, req)
 	if err != nil {
 		return nil, err
 	}

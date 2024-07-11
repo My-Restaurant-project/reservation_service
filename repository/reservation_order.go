@@ -36,7 +36,7 @@ func (r *ReservationOrderRespository) CreateReservationOrder(ctx context.Context
 		ReservationId: req.ReservationId,
 		MenuItemId:    req.MenuItemId,
 		Quantity:      req.Quantity,
-		CreatedAt:     cast.ToString(time.Now()),
+		CreatedAt:     time.Now().String(),
 	}
 
 	return resp, nil

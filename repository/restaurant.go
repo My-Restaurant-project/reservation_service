@@ -13,7 +13,7 @@ type RestaurantRepository struct {
 	db *sqlx.DB
 }
 
-func NewRestaurantRepo(db *sqlx.DB) *RestaurantRepository {
+func NewRestaurantRepository(db *sqlx.DB) *RestaurantRepository {
 	return &RestaurantRepository{db: db}
 }
 
