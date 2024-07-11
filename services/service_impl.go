@@ -7,6 +7,7 @@ import (
 	reser "reservation_service/genproto/reservation_service"
 	repo "reservation_service/repository"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -153,6 +154,29 @@ func (rs *mainServiceImpl) GetReservations(ctx context.Context, req *reser.GetRe
 // Rerervaton Order Service
 
 func (rs *mainServiceImpl) AddReservationOrder(ctx context.Context, resReq *reser.AddReservationOrderRequest) (*reser.AddReservationOrderResponse, error) {
+
+	if uuid.Validate(resReq.GetMenuItemId()) != nil {
+		return nil, fmt.Errorf("invalid menu item id: %s", resReq.GetMenuItemId())
+	}
+
+	if uuid.Validate(resReq.GetReservationId()) != nil {
+		return nil, fmt.Errorf("invalid reservation id: %s", resReq.GetReservationId())
+	}
+
+	mRes, err := rs.menuService.GetMenu(ctx, &reser.GetMenuRequest{Id: resReq.MenuItemId})
+	if err != nil {
+		return nil, fmt.Errorf("menu item not found for id: %s", resReq.MenuItemId)
+	}
+
+	rRes, err := rs.GetReservation(ctx, &reser.GetReservationRequest{Id: resReq.ReservationId})
+	if err != nil {
+		return nil, fmt.Errorf("reservation not found for id: %s", resReq.ReservationId)
+	}
+
+	if mRes.Menu.RestaurantId != rRes.Reservation.RestaurantId {
+		return nil, fmt.Errorf("menu item and reservation do not belong to the same restaurant")
+	}
+
 	resp, err := rs.ReservationOrderService().AddReservationOrder(ctx, resReq)
 	if err != nil {
 		return nil, err
@@ -194,8 +218,7 @@ func (rs *mainServiceImpl) GetReservationsOrders(ctx context.Context, req *reser
 }
 
 // Menu service implementation
-
-func (rs *mainServiceImpl) Menu(ctx context.Context, req *reser.AddMenuRequest) (*reser.AddMenuResponse, error) {
+func (rs *mainServiceImpl) AddMenu(ctx context.Context, req *reser.AddMenuRequest) (*reser.AddMenuResponse, error) {
 	resp, err := rs.MenuService().AddMenu(ctx, req)
 	if err != nil {
 		return nil, err

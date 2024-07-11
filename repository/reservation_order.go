@@ -24,7 +24,7 @@ func (r *ReservationOrderRespository) CreateReservationOrder(ctx context.Context
 
 	id := uuid.NewString()
 
-	query := `insert into reservationOrders (id,reservation_id, menu_item_id, quantity) values($1,$2,$3,$4)`
+	query := `insert into reservationOrders (id, reservation_id, menu_item_id, quantity) values($1, $2, $3, $4)`
 
 	_, err := r.db.ExecContext(ctx, query, id, req.ReservationId, req.MenuItemId, req.Quantity)
 	if err != nil {
