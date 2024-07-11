@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	reser "reservation_service/genproto/reservation_service"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -14,7 +15,7 @@ type ReservationRespoitory struct {
 	db *sqlx.DB
 }
 
-func NewReservationRepo(db *sqlx.DB) *ReservationRespoitory {
+func NewReservationRepository(db *sqlx.DB) *ReservationRespoitory {
 	return &ReservationRespoitory{db: db}
 }
 
@@ -55,7 +56,7 @@ func (r *ReservationRespoitory) CreateReservation(ctx context.Context, reservRes
 		ReservationTime: reservRes.ReservationTime,
 		Status:          reservRes.Status,
 	}
-	
+
 	return addRes, nil
 }
 
@@ -78,8 +79,6 @@ func (r *ReservationRespoitory) GetReservationById(ctx context.Context, req *res
 	return &reser.GetReservationResponse{Reservation: &res}, nil
 }
 
-
-
 func (r *ReservationRespoitory) UpdateReservation(ctx context.Context, req *reser.UpdateReservationRequest) (*reser.UpdateReservationResponse, error) {
 	query := `
 		UPDATE reservations
@@ -88,19 +87,17 @@ func (r *ReservationRespoitory) UpdateReservation(ctx context.Context, req *rese
 		RETURNING id, user_id, restaurant_id, reservation_time, status, created_at, updated_at
     `
 	row := r.db.QueryRowContext(ctx, query, req.RestaurantId, req.ReservationTime, req.Status, req.Id)
-	var updResRes *reser.UpdateReservationResponse
+	var updResRes reser.UpdateReservationResponse
 	var res reser.Reservation
-	
+
 	err := row.Scan(&res.Id, &res.UserId, &res.RestaurantId, &req.ReservationTime, &res.Status, &res.CreatedAt, &res.UpdatedAt)
 	if err != nil {
-		return updResRes, err
+		return &updResRes, err
 	}
 	updResRes.Reservation = &res
 
-	return updResRes, nil
+	return &updResRes, nil
 }
-
-
 
 func (r *ReservationRespoitory) DeleteReservation(ctx context.Context, req *reser.DeleteReservationRequest) (*reser.DeleteReservationResponse, error) {
 	ID := req.Id
@@ -118,29 +115,37 @@ func (r *ReservationRespoitory) DeleteReservation(ctx context.Context, req *rese
 	return &reser.DeleteReservationResponse{Deleted: true}, nil
 }
 
-
 func (r *ReservationRespoitory) GetAllReservations(ctx context.Context, req *reser.GetReservationsRequest) (*reser.GetReservationsResponse, error) {
-	query := `
-		SELECT id, user_id, restaurant_id, reservation_time, status, created_at, updated_at
-        FROM reservations
-        WHERE deleted_at IS NULL
-    `
-	rows, err := r.db.QueryContext(ctx, query)
-	if err != nil {
-		return  &reser.GetReservationsResponse{Reservations: []*reser.Reservation{}}, err
+
+	params := []string{}
+	args := []interface{}{}
+
+	query := `SELECT id, user_id, restaurant_id, reservation_time, status, created_at, updated_at FROM reservations`
+
+	if req.GetRestaurantId() != "" {
+		params = append(params, fmt.Sprintf("restaurant_id =$%d", len(args)+1))
+		args = append(args, req.GetRestaurantId())
 	}
-	defer rows.Close()
-	var reservations []*reser.Reservation
-	for rows.Next() {
-		var res reser.Reservation
-		err := rows.Scan(&res.Id, &res.UserId, &res.RestaurantId, &res.ReservationTime, &res.Status, &res.CreatedAt, &res.UpdatedAt)
-		if err != nil {
-			return &reser.GetReservationsResponse{Reservations: []*reser.Reservation{}}, err
-		}
-		reservations = append(reservations, &res)
+
+	if req.GetUserId() != "" {
+		params = append(params, fmt.Sprintf("user_id =$%d", len(args)+1))
+		args = append(args, req.GetUserId())
+	}
+
+	if req.GetStatus() != "" {
+		params = append(params, fmt.Sprintf("status =$%d", len(args)+1))
+		args = append(args, req.GetStatus())
+	}
+
+	if len(params) > 0 {
+		query += " WHERE " + strings.Join(params, " AND ") + "WHERE deleted_at IS NULL"
+	}
+	reservations := []*reser.Reservation{}
+
+	err := r.db.SelectContext(ctx, &reservations, query, args...)
+	if err != nil {
+		return nil, err
 	}
 
 	return &reser.GetReservationsResponse{Reservations: reservations}, nil
 }
-
-

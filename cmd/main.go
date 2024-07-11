@@ -33,7 +33,7 @@ func main() {
 	log.Println("Server started on port " + config.URL_PORT)
 
 	// Initialize repository and services
-	rs := services.NewReservationService(db)
+	rs := services.NewMainService(db)
 
 	// Create a new gRPC server
 	s := grpc.NewServer()

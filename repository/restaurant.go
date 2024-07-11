@@ -13,7 +13,7 @@ type RestaurantRepository struct {
 	db *sqlx.DB
 }
 
-func NewRestaurantRepo(db *sqlx.DB) *RestaurantRepository {
+func NewRestaurantRepository(db *sqlx.DB) *RestaurantRepository {
 	return &RestaurantRepository{db: db}
 }
 
@@ -56,12 +56,11 @@ func (r *RestaurantRepository) GetRestaurantById(ctx context.Context, req *reser
 		return &reser.GetRestaurantResponse{Restaurant: &reser.Restaurant{}}, err
 	}
 
-
 	return &reser.GetRestaurantResponse{Restaurant: &res}, nil
 }
 
 func (r *RestaurantRepository) UpdateRestaurant(ctx context.Context, req *reser.UpdateRestaurantRequest) (*reser.UpdateRestaurantResponse, error) {
-	
+
 	query := `
 		UPDATE restaurants
         SET name = $1, description = $2, address = $3, phone_number = $4, updated_at = now()
@@ -69,17 +68,17 @@ func (r *RestaurantRepository) UpdateRestaurant(ctx context.Context, req *reser.
 		RETURNING id, name, description, address, phone_number, created_at, updated_at
     `
 	row := r.db.QueryRowContext(ctx, query, req.Name, req.Description, req.Address, req.PhoneNumber, req.Id)
-	var updRestRes *reser.UpdateRestaurantResponse
+	var updRestRes reser.UpdateRestaurantResponse
 	var res reser.Restaurant
-	
+
 	err := row.Scan(&res.Id, &res.Name, &res.Description, &req.Address, &res.PhoneNumber, &res.CreatedAt, &res.UpdatedAt)
 	if err != nil {
 		log.Println(err)
-		return updRestRes, err
+		return &updRestRes, err
 	}
 	updRestRes.Restaurant = &res
 
-	return updRestRes, nil
+	return &updRestRes, nil
 }
 
 func (r *RestaurantRepository) DeleteRestaurant(ctx context.Context, req *reser.DeleteRestaurantRequest) (*reser.DeleteRestaurantResponse, error) {
@@ -100,7 +99,7 @@ func (r *RestaurantRepository) DeleteRestaurant(ctx context.Context, req *reser.
 }
 
 func (r *RestaurantRepository) GetAllRestaurants(ctx context.Context, req *reser.GetRestaurantsRequest) (*reser.GetRestaurantsResponse, error) {
-	
+
 	query := `
 		SELECT id, name, description, address, phone_number, created_at, updated_at
         FROM restaurants
