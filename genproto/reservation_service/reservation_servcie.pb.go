@@ -1282,18 +1282,19 @@ func (x *GetReservationsResponse) GetReservations() []*Reservation {
 }
 
 type Reservation struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
+    state            protoimpl.MessageState
+    sizeCache        protoimpl.SizeCache
+    unknownFields    protoimpl.UnknownFields
 
-	Id              string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId          string `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	RestaurantId    string `protobuf:"bytes,3,opt,name=restaurant_id,json=restaurantId,proto3" json:"restaurant_id,omitempty"`
-	ReservationTime string `protobuf:"bytes,4,opt,name=reservation_time,json=reservationTime,proto3" json:"reservation_time,omitempty"`
-	Status          string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
-	CreatedAt       string `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt       string `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+    Id               string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty" db:"id"`
+    UserId           string `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty" db:"user_id"`
+    RestaurantId     string `protobuf:"bytes,3,opt,name=restaurant_id,json=restaurantId,proto3" json:"restaurant_id,omitempty" db:"restaurant_id"`
+    ReservationTime  string `protobuf:"bytes,4,opt,name=reservation_time,json=reservationTime,proto3" json:"reservation_time,omitempty" db:"reservation_time"`
+    Status           string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty" db:"status"`
+    CreatedAt        string `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty" db:"created_at"`
+    UpdatedAt        string `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty" db:"updated_at"`
 }
+
 
 func (x *Reservation) Reset() {
 	*x = Reservation{}
