@@ -120,28 +120,31 @@ func (r *ReservationRespoitory) GetAllReservations(ctx context.Context, req *res
 	params := []string{}
 	args := []interface{}{}
 
-	query := `SELECT id, user_id, restaurant_id, reservation_time, status, created_at, updated_at FROM reservations WHERE deleted_at IS NULL`
+	query := `SELECT id, user_id, restaurant_id, reservation_time, status, created_at, updated_at FROM reservations `
 
 	if req.GetRestaurantId() != "" {
-		params = append(params, fmt.Sprintf("restaurant_id =$%d", len(args)+1))
+		params = append(params, fmt.Sprintf("restaurant_id = $%d", len(args)+1))
 		args = append(args, req.GetRestaurantId())
 	}
 
 	if req.GetUserId() != "" {
-		params = append(params, fmt.Sprintf("user_id =$%d", len(args)+1))
+		params = append(params, fmt.Sprintf("user_id = $%d", len(args)+1))
 		args = append(args, req.GetUserId())
 	}
 
 	if req.GetStatus() != "" {
-		params = append(params, fmt.Sprintf("status =$%d", len(args)+1))
+		params = append(params, fmt.Sprintf("status = $%d", len(args)+1))
 		args = append(args, req.GetStatus())
 	}
 
 	if len(params) > 0 {
-		query += " WHERE " + strings.Join(params, " AND ") + "WHERE deleted_at IS NULL"
+		query += " WHERE " + strings.Join(params, " AND ") + " AND deleted_at IS NULL"
 	}
-	reservations := []*reser.Reservation{}
 
+	query += " ORDER BY created_at DESC"
+
+	reservations := []*reser.Reservation{}
+	fmt.Println(query, args)
 	err := r.db.SelectContext(ctx, &reservations, query, args...)
 	if err != nil {
 		return nil, err
