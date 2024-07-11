@@ -105,7 +105,7 @@ func (r *ReservationRespoitory) DeleteReservation(ctx context.Context, req *rese
 		UPDATE reservations
         SET deleted_at = now()
         WHERE id = $1
-		
+
     `
 	_, err := r.db.ExecContext(ctx, query, ID)
 	if err != nil {
@@ -120,7 +120,7 @@ func (r *ReservationRespoitory) GetAllReservations(ctx context.Context, req *res
 	params := []string{}
 	args := []interface{}{}
 
-	query := `SELECT id, user_id, restaurant_id, reservation_time, status, created_at, updated_at FROM reservations`
+	query := `SELECT id, user_id, restaurant_id, reservation_time, status, created_at, updated_at FROM reservations WHERE deleted_at IS NULL`
 
 	if req.GetRestaurantId() != "" {
 		params = append(params, fmt.Sprintf("restaurant_id =$%d", len(args)+1))
