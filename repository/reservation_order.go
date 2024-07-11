@@ -63,7 +63,7 @@ func (r *ReservationOrderRespository) GetReservationOrderById(ctx context.Contex
 func (r *ReservationOrderRespository) UpdateReservationOrder(ctx context.Context, req *reser.UpdateReservationOrderRequest) (*reser.UpdateReservationOrderResponse, error) {
 	var resp = &reser.UpdateReservationOrderResponse{}
 
-	query := `update reservationOrders set reservation_id=$1, menu_item_id=$2, quantuty=$3 from reservationOrders where id=$4`
+	query := `update reservationOrders set reservation_id=$1, menu_item_id=$2, quantuty=$3 from reservationOrders where id=$4 and deleted_at is null`
 
 	_, err := r.db.ExecContext(ctx, query, req.ReservationId, req.MenuItemId, req.Quantity, req.Id)
 	if err != nil {
@@ -84,7 +84,7 @@ func (r *ReservationOrderRespository) UpdateReservationOrder(ctx context.Context
 }
 
 func (r *ReservationOrderRespository) DeleteReservationOrder(ctx context.Context, req *reser.DeleteReservationOrderRequest) (*reser.DeleteReservationOrderResponse, error) {
-	query := `update reservationorders set deleted_at=$1 where id=$2`
+	query := `update reservationorders set deleted_at=$1 where id=$2 and deleted_at is null`
 
 	deleted := time.Now()
 
@@ -97,7 +97,7 @@ func (r *ReservationOrderRespository) DeleteReservationOrder(ctx context.Context
 }
 
 func (r *ReservationOrderRespository) GetAllReservationOrders(ctx context.Context, req *reser.GetReservationOrdersRequest) (*reser.GetReservationOrdersResponse, error) {
-	query := `select id, reservation_id, menu_item_id, quantity from reservationorders`
+	query := `select id, reservation_id, menu_item_id, quantity from reservationorders where deleted_at is null`
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
