@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"log"
 	user "reservation_service/genproto/authentication_service"
 	reser "reservation_service/genproto/reservation_service"
 	repo "reservation_service/repository"
@@ -20,15 +21,16 @@ type MainService interface {
 
 type mainServiceImpl struct {
 	reser.UnimplementedReservationServiceServer
-	user.UnimplementedAuthenticationServiceServer
+	userClient              user.AuthenticationServiceClient
 	restaurantService       RestaurantService
 	reservatiionService     ReservationService
 	reservationOrderService ReservationOrderService
 	menuService             MenuService
 }
 
-func NewMainService(db *sqlx.DB) *mainServiceImpl {
+func NewMainService(db *sqlx.DB, userClinet user.AuthenticationServiceClient) *mainServiceImpl {
 	return &mainServiceImpl{
+		userClient:              userClinet,
 		restaurantService:       NewRestaurantService(repo.NewRestaurantRepository(db)),
 		reservatiionService:     NewReservationService(repo.NewReservationRepository(db)),
 		reservationOrderService: NewReservationOrderService(repo.NewReservationOrderRepository(db)),
@@ -104,8 +106,9 @@ func (rs *mainServiceImpl) AddReservation(ctx context.Context, resReq *reser.Add
 		return nil, fmt.Errorf("restaurant not found for id: %s", resId)
 	}
 
-	_, err = rs.GetProfileById(ctx, &user.UserIdRequest{Id: userId})
+	_, err = rs.userClient.GetProfileById(ctx, &user.UserIdRequest{Id: userId})
 	if err != nil {
+		log.Println(err)
 		return nil, fmt.Errorf("user not found for id: %s", userId)
 	}
 
