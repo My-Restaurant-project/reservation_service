@@ -57,29 +57,33 @@ func (r *MenuRepository) GetMenuById(ctx context.Context, req *reser.GetMenuRequ
 }
 
 func (r *MenuRepository) UpdateMenu(ctx context.Context, req *reser.UpdateMenuRequest) (*reser.UpdateMenuResponse, error) {
-	query := `update menu set name, description, price from menu where id = $1 and deleted_at is null`
+	query := `
+	UPDATE menu
+	SET restaurant_id=$1, name=$2, description=$3, price=$4, updated_at=now()
+	WHERE id=$5 and deleted_at is null
+	RETURNING id, restaurant_id, name, description, price, created_at, updated_at
+	`
+	row := r.db.QueryRowContext(ctx, query, req.RestaurantId, req.Name, req.Description, req.Price, req.Id)
+	var updMenuRes reser.UpdateMenuResponse
+	var menu reser.Menu
 
-	_, err := r.db.ExecContext(ctx, query, req.Id)
+	err := row.Scan(&menu.Id, &menu.RestaurantId, &menu.Name, &menu.Description, &menu.Price, &menu.CreatedAt, &menu.UpdatedAt)
 	if err != nil {
-		return nil, err
+		return &updMenuRes, err
 	}
-	var resp = &reser.UpdateMenuResponse{}
-	var menu = &reser.Menu{
-		Id:           req.Id,
-		RestaurantId: req.RestaurantId,
-		Name:         req.Name,
-		Description:  req.Description,
-		Price:        req.Price,
-		CreatedAt:    cast.ToString(time.Now()),
-	}
+	updMenuRes.Menu = &menu
 
-	resp.Menu = menu
+	
 
-	return resp, nil
+	return &updMenuRes, nil
 }
 
 func (r *MenuRepository) DeleteMenu(ctx context.Context, req *reser.DeleteMenuRequest) (*reser.DeleteMenuResponse, error) {
-	query := `update menu set deleted_at from menu where id=$1 and deleted_at is null`
+	query := `
+	UPDATE menu
+	SET deleted_at=now()
+	WHERE id=$1 and deleted_at is null
+	`
 
 	_, err := r.db.ExecContext(ctx, query, req.Id)
 	if err != nil {

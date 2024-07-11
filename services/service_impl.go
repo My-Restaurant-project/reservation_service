@@ -178,7 +178,7 @@ func (rs *mainServiceImpl) GetReservationsOrders(ctx context.Context, req *reser
 
 // Menu service implementation
 
-func (rs *mainServiceImpl) Menu(ctx context.Context, req *reser.AddMenuRequest) (*reser.AddMenuResponse, error) {
+func (rs *mainServiceImpl) AddMenu(ctx context.Context, req *reser.AddMenuRequest) (*reser.AddMenuResponse, error) {
 	resp, err := rs.MenuService().AddMenu(ctx, req)
 	if err != nil {
 		return nil, err
